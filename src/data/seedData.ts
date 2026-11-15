@@ -1,3 +1,7 @@
+import heroCareCircleImg from '../assets/images/hero_care_circle_1794726991916.jpg';
+import avatarCaregiverMayaImg from '../assets/images/avatar_caregiver_maya_1794726992429.jpg';
+import avatarFamilyDavidImg from '../assets/images/avatar_family_david_1794726993126.jpg';
+import avatarPatientEleanorImg from '../assets/images/avatar_patient_eleanor_1794726991898.jpg';
 import type {
   Appointment,
   CareCircleMember,
@@ -13,12 +17,12 @@ import type {
   UserSettings,
 } from '../types/pilluminati';
 
-export const HERO_IMAGE_PATH = '/src/assets/images/hero_care_circle_1794726991916.jpg';
+export const HERO_IMAGE_PATH = heroCareCircleImg;
 
 export const ROLE_AVATARS: Record<UserRole, string> = {
-  patient: '/src/assets/images/avatar_patient_eleanor_1794726991898.jpg',
-  caregiver: '/src/assets/images/avatar_caregiver_maya_1794726992429.jpg',
-  family: '/src/assets/images/avatar_family_david_1794726993126.jpg',
+  patient: avatarPatientEleanorImg,
+  caregiver: avatarCaregiverMayaImg,
+  family: avatarFamilyDavidImg,
 };
 
 export function getTodayIsoDate(): string {
