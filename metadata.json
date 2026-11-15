@@ -1,0 +1,6 @@
+{
+  "name": "PILLUMINATI",
+  "description": "Elderly care and medication management platform connecting patients, caregivers, and families. Because remembering meds shouldn't be a family conspiracy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

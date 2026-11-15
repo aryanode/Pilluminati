@@ -1,0 +1,488 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Account metadata and accessibility settings for an authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "accountRole": { "type": "string", "enum": ["patient", "caregiver", "family"] },
+        "activeProfileId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "textScale": { "type": "string", "enum": ["standard", "large", "xl"] },
+        "highContrast": { "type": "boolean" },
+        "reducedMotion": { "type": "boolean" },
+        "reminderLeadMinutes": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "accountRole", "createdAt", "updatedAt"]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII contact details accessible strictly by the owning user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "address": { "type": "string", "maxLength": 300 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "updatedAt"]
+    },
+    "PatientProfile": {
+      "title": "PatientProfile",
+      "description": "Patient health profile with medical facts, emergency contacts, and sharing permissions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "dateOfBirth": { "type": "string", "maxLength": 20 },
+        "gender": { "type": "string", "maxLength": 40 },
+        "bloodType": { "type": "string", "maxLength": 20 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "allergiesText": { "type": "string", "maxLength": 500 },
+        "conditionsText": { "type": "string", "maxLength": 500 },
+        "primaryPhysician": { "type": "string", "maxLength": 120 },
+        "physicianPhone": { "type": "string", "maxLength": 32 },
+        "pharmacyName": { "type": "string", "maxLength": 120 },
+        "pharmacyPhone": { "type": "string", "maxLength": 32 },
+        "emergencyContactName": { "type": "string", "maxLength": 120 },
+        "emergencyContactRelation": { "type": "string", "maxLength": 80 },
+        "emergencyContactPhone": { "type": "string", "maxLength": 32 },
+        "advanceDirectiveNote": { "type": "string", "maxLength": 500 },
+        "passcodeEnabled": { "type": "boolean" },
+        "familyShowDetailedMeds": { "type": "boolean" },
+        "familyShowAdherencePct": { "type": "boolean" },
+        "familyShowAppointments": { "type": "boolean" },
+        "familyShowCareUpdates": { "type": "boolean" },
+        "familyShowPassport": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerUid", "fullName", "passcodeEnabled", "createdAt", "updatedAt"]
+    },
+    "CaregiverRelationship": {
+      "title": "CaregiverRelationship",
+      "description": "Authorized link between a patient profile and a primary caregiver.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "patientOwnerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "caregiverUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "caregiverName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "relation": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["active", "revoked"] },
+        "tier": { "type": "string", "enum": ["primary", "backup"] },
+        "availabilityStatus": { "type": "string", "enum": ["available", "busy", "away"] },
+        "shiftWindow": { "type": "string", "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "patientOwnerUid", "caregiverUid", "caregiverName", "status", "createdAt", "updatedAt"]
+    },
+    "FamilyMembership": {
+      "title": "FamilyMembership",
+      "description": "Authorized link between a patient profile and a family member with permission flags.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "patientOwnerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "memberUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "memberName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "relation": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["active", "revoked"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "patientOwnerUid", "memberUid", "memberName", "status", "createdAt", "updatedAt"]
+    },
+    "Invitation": {
+      "title": "Invitation",
+      "description": "Cryptographically random invitation token issued by a patient profile owner.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 20, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "patientName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "issuedByUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "targetEmail": { "type": "string", "format": "email", "maxLength": 254 },
+        "targetRole": { "type": "string", "enum": ["caregiver", "family"] },
+        "relation": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "revoked"] },
+        "acceptedByUid": { "type": "string", "maxLength": 128 },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "patientName", "issuedByUid", "targetEmail", "targetRole", "status", "expiresAt", "createdAt", "updatedAt"]
+    },
+    "Medication": {
+      "title": "Medication",
+      "description": "Prescribed or scheduled medication linked to a patient profile with Phase 3 multi-dose, food, and discontinuation metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "dosage": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "dosageAmount": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "dosageUnit": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "frequency": { "type": "string", "enum": ["once_daily", "twice_daily", "three_times_daily", "specific_weekdays", "custom"] },
+        "scheduledTimes": { "type": "array", "items": { "type": "string" } },
+        "weekdays": { "type": "array", "items": { "type": "integer" } },
+        "customIntervalDays": { "type": "integer" },
+        "customScheduleNote": { "type": "string", "maxLength": 160 },
+        "startDate": { "type": "string", "maxLength": 20 },
+        "endDate": { "type": "string", "maxLength": 20 },
+        "instructions": { "type": "string", "maxLength": 300 },
+        "foodInstruction": { "type": "string", "enum": ["before_food", "after_food", "with_food", "no_restriction"] },
+        "prescriber": { "type": "string", "maxLength": 120 },
+        "pillAppearance": { "type": "string", "maxLength": 100 },
+        "prescriptionImageUrl": { "type": "string", "maxLength": 120000 },
+        "timezone": { "type": "string", "maxLength": 64 },
+        "gracePeriodMinutes": { "type": "integer" },
+        "missedAfterMinutes": { "type": "integer" },
+        "supplyDays": { "type": "integer" },
+        "active": { "type": "boolean" },
+        "discontinued": { "type": "boolean" },
+        "discontinuedAt": { "type": "string", "maxLength": 40 },
+        "discontinuedReason": { "type": "string", "maxLength": 300 },
+        "lastChangeNote": { "type": "string", "maxLength": 240 },
+        "familyAllowed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "createdBy", "name", "dosage", "active", "familyAllowed", "createdAt", "updatedAt"]
+    },
+    "MedicationSchedule": {
+      "title": "MedicationSchedule",
+      "description": "Time-of-day dosing schedule referencing a medication and patient profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "medicationId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "timeSlot": { "type": "string", "enum": ["morning", "midday", "evening", "bedtime"] },
+        "scheduledTime": { "type": "string", "minLength": 4, "maxLength": 10 },
+        "frequency": { "type": "string", "enum": ["once_daily", "twice_daily", "three_times_daily", "specific_weekdays", "custom"] },
+        "weekdays": { "type": "array", "items": { "type": "integer" } },
+        "customIntervalDays": { "type": "integer" },
+        "startDate": { "type": "string", "maxLength": 20 },
+        "endDate": { "type": "string", "maxLength": 20 },
+        "timezone": { "type": "string", "maxLength": 64 },
+        "active": { "type": "boolean" },
+        "discontinued": { "type": "boolean" },
+        "familyAllowed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "medicationId", "ownerUid", "timeSlot", "scheduledTime", "active", "familyAllowed", "createdAt", "updatedAt"]
+    },
+    "AdherenceRecord": {
+      "title": "AdherenceRecord",
+      "description": "Timestamped confirmation, missed-classification, or safe correction record for a scheduled dose.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "medicationId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "medicationName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "dosage": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "scheduledDate": { "type": "string", "minLength": 8, "maxLength": 20 },
+        "scheduledTime": { "type": "string", "minLength": 4, "maxLength": 10 },
+        "status": { "type": "string", "enum": ["pending", "upcoming", "due", "taken", "unconfirmed", "missed", "skipped", "corrected"] },
+        "confirmedAt": { "type": "string", "maxLength": 20 },
+        "actualConfirmedAt": { "type": "string", "maxLength": 40 },
+        "confirmedByUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "confirmedByName": { "type": "string", "maxLength": 120 },
+        "correctedFromStatus": { "type": "string", "enum": ["pending", "upcoming", "due", "taken", "unconfirmed", "missed", "skipped", "corrected"] },
+        "correctionReason": { "type": "string", "maxLength": 300 },
+        "correctedAt": { "type": "string", "maxLength": 40 },
+        "note": { "type": "string", "maxLength": 300 },
+        "familyAllowed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "medicationId", "ownerUid", "scheduledDate", "scheduledTime", "status", "confirmedByUid", "familyAllowed", "createdAt", "updatedAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Clinical visit scheduled for a patient profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "doctorName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "specialty": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "minLength": 8, "maxLength": 20 },
+        "time": { "type": "string", "minLength": 4, "maxLength": 12 },
+        "location": { "type": "string", "maxLength": 200 },
+        "assignedCaregiver": { "type": "string", "maxLength": 120 },
+        "notes": { "type": "string", "maxLength": 400 },
+        "status": { "type": "string", "enum": ["upcoming", "completed", "cancelled"] },
+        "familyAllowed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "createdBy", "title", "doctorName", "date", "time", "status", "familyAllowed", "createdAt", "updatedAt"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Clinical or adherence alert raised for caregivers and patients.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "patientName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "severity": { "type": "string", "enum": ["info", "warning", "urgent"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "detail": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "resolved": { "type": "boolean" },
+        "resolvedByUid": { "type": "string", "maxLength": 128 },
+        "sourceType": { "type": "string", "enum": ["manual", "scheduler_dose", "scheduler_relay"] },
+        "deliveryChannel": { "type": "string", "enum": ["in_app_firestore"] },
+        "deliveryStatus": { "type": "string", "enum": ["delivered", "blocked"] },
+        "deliveryNote": { "type": "string", "maxLength": 300 },
+        "dedupeKey": { "type": "string", "maxLength": 160 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "patientName", "severity", "title", "detail", "resolved", "createdAt", "updatedAt"]
+    },
+    "EmergencyToken": {
+      "title": "EmergencyToken",
+      "description": "Time-limited, revocable emergency health passport token.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 24, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "includeMedications": { "type": "boolean" },
+        "revoked": { "type": "boolean" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "label", "includeMedications", "revoked", "expiresAt", "createdAt", "updatedAt"]
+    },
+    "CaregiverAvailability": {
+      "title": "CaregiverAvailability",
+      "description": "Caregiver shift availability and Care Relay handoff record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "caregiverUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fromCaregiver": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "toCaregiver": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "shiftWindow": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "status": { "type": "string", "enum": ["active", "handed_off", "acknowledged"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "caregiverUid", "fromCaregiver", "toCaregiver", "shiftWindow", "summary", "status", "createdAt", "updatedAt"]
+    },
+    "AiConversationMessage": {
+      "title": "AiConversationMessage",
+      "description": "Persisted Pillu AI companion conversation message scoped to user and profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sender": { "type": "string", "enum": ["user", "pillu"] },
+        "text": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "userId", "sender", "text", "createdAt"]
+    },
+    "ProfilePasscodeSecurity": {
+      "title": "ProfilePasscodeSecurity",
+      "description": "Server-only salted scrypt hash and lockout metadata for shared profile passcodes.",
+      "type": "object",
+      "properties": {
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "salt": { "type": "string", "minLength": 16, "maxLength": 128 },
+        "hash": { "type": "string", "minLength": 64, "maxLength": 256 },
+        "failedAttempts": { "type": "integer" },
+        "lockedUntilMs": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["profileId", "salt", "hash", "failedAttempts", "lockedUntilMs", "updatedAt"]
+    },
+    "PublicEmergencySnapshot": {
+      "title": "PublicEmergencySnapshot",
+      "description": "Minimal medical passport subset keyed by cryptographic token ID for responder QR access.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 20, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "patientFullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "bloodType": { "type": "string", "maxLength": 20 },
+        "primaryPhysician": { "type": "string", "maxLength": 120 },
+        "physicianPhone": { "type": "string", "maxLength": 32 },
+        "emergencyContactName": { "type": "string", "maxLength": 120 },
+        "emergencyContactRelation": { "type": "string", "maxLength": 80 },
+        "emergencyContactPhone": { "type": "string", "maxLength": 32 },
+        "advanceDirectiveNote": { "type": "string", "maxLength": 500 },
+        "includeMedications": { "type": "boolean" },
+        "revoked": { "type": "boolean" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "label", "patientFullName", "includeMedications", "revoked", "expiresAt", "createdAt", "updatedAt"]
+    },
+    "NotificationDelivery": {
+      "title": "NotificationDelivery",
+      "description": "Persistent delivery ledger tracking in-app delivery and blocked external channels.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "alertId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "channel": { "type": "string", "enum": ["in_app_firestore", "sms", "email", "push"] },
+        "deliveryStatus": { "type": "string", "enum": ["delivered", "blocked"] },
+        "statusDetail": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "alertId", "channel", "deliveryStatus", "statusDetail", "createdAt"]
+    },
+    "SchedulerRun": {
+      "title": "SchedulerRun",
+      "description": "Audit log of real server-side medication reminder and escalation checks.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "triggeredByUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "triggerType": { "type": "string", "enum": ["interval", "manual"] },
+        "schedulesChecked": { "type": "integer" },
+        "overdueFound": { "type": "integer" },
+        "alertsCreated": { "type": "integer" },
+        "handoffsEscalated": { "type": "integer" },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "ownerUid", "triggeredByUid", "triggerType", "schedulesChecked", "overdueFound", "alertsCreated", "handoffsEscalated", "summary", "createdAt"]
+    },
+    "MedicationChange": {
+      "title": "MedicationChange",
+      "description": "Audit log of medication additions, edits, pauses, resumes, and safe discontinuations.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "profileId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "medicationId": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "medicationName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "changeType": { "type": "string", "enum": ["added", "edited", "paused", "resumed", "discontinued"] },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "changedByUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "changedByName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "familyAllowed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "profileId", "medicationId", "ownerUid", "medicationName", "changeType", "summary", "changedByUid", "changedByName", "familyAllowed", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "User account metadata, immutable accountRole, and accessibility settings."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Private PII isolated to the owning user."
+    },
+    "/patientProfiles/{profileId}": {
+      "schema": { "$ref": "#/entities/PatientProfile" },
+      "description": "Patient health profiles keyed by unpredictable random IDs."
+    },
+    "/patientProfiles/{profileId}/security/{docId}": {
+      "schema": { "$ref": "#/entities/ProfilePasscodeSecurity" },
+      "description": "Server-only passcode hash and lockout records."
+    },
+    "/caregiverRelationships/{relId}": {
+      "schema": { "$ref": "#/entities/CaregiverRelationship" },
+      "description": "Authorized caregiver links to patient profiles."
+    },
+    "/familyMemberships/{memId}": {
+      "schema": { "$ref": "#/entities/FamilyMembership" },
+      "description": "Authorized family member links to patient profiles."
+    },
+    "/invitations/{inviteId}": {
+      "schema": { "$ref": "#/entities/Invitation" },
+      "description": "Unpredictable invitation tokens for profile sharing."
+    },
+    "/medications/{medId}": {
+      "schema": { "$ref": "#/entities/Medication" },
+      "description": "Medications belonging to a patient profile."
+    },
+    "/medicationSchedules/{scheduleId}": {
+      "schema": { "$ref": "#/entities/MedicationSchedule" },
+      "description": "Dosing schedules referencing a medication and patient profile."
+    },
+    "/adherenceRecords/{recordId}": {
+      "schema": { "$ref": "#/entities/AdherenceRecord" },
+      "description": "Dose adherence confirmations and status audit logs."
+    },
+    "/medicationChanges/{changeId}": {
+      "schema": { "$ref": "#/entities/MedicationChange" },
+      "description": "Audit log of medication additions, edits, and discontinuations."
+    },
+    "/appointments/{apptId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Clinical appointments linked to a patient profile."
+    },
+    "/alerts/{alertId}": {
+      "schema": { "$ref": "#/entities/Alert" },
+      "description": "Care alerts linked to a patient profile."
+    },
+    "/emergencyTokens/{tokenId}": {
+      "schema": { "$ref": "#/entities/EmergencyToken" },
+      "description": "Revocable, expiring tokens for controlled emergency passport access."
+    },
+    "/caregiverAvailability/{availId}": {
+      "schema": { "$ref": "#/entities/CaregiverAvailability" },
+      "description": "Caregiver shift availability and Care Relay handoffs."
+    },
+    "/aiConversations/{msgId}": {
+      "schema": { "$ref": "#/entities/AiConversationMessage" },
+      "description": "Pillu AI conversation history scoped to user and patient profile."
+    },
+    "/publicEmergencySnapshots/{tokenId}": {
+      "schema": { "$ref": "#/entities/PublicEmergencySnapshot" },
+      "description": "Token-gated minimal medical snapshots readable only via unpredictable non-revoked tokens."
+    },
+    "/notificationDeliveries/{deliveryId}": {
+      "schema": { "$ref": "#/entities/NotificationDelivery" },
+      "description": "Real delivery audit trail for caregiver & patient alerts."
+    },
+    "/schedulerRuns/{runId}": {
+      "schema": { "$ref": "#/entities/SchedulerRun" },
+      "description": "Server-side medication and Care Relay scheduler execution logs."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+# PILLUMINATI — Implementation Status
+
+## Status Matrix
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| Design System & Accessibility | Completed | Mint, warm off-white, lavender accents, dark teal typography, text scaling (`standard`, `large`, `xl`), high-contrast toggle, reduced motion. |
+| Role-Aware Dashboards | Completed | Patient, Primary Caregiver, and Family Member dashboards scoped by authoritative Firestore profile membership and family visibility permissions. |
+| Phase 3 Medication Management & Scheduling | Completed | Full create/edit/discontinue workflows (`POST /api/medications`, `PATCH /api/medications/:medId`, `PATCH /api/medications/:medId/discontinue`), multi-dose scheduled times without duplicates, frequencies (`once_daily`, `twice_daily`, `three_times_daily`, `specific_weekdays`, `custom`), start/end dates, IANA timezones, meal timing, compressed prescription images, and `medicationChanges` audit trail. |
+| Phase 3 Adherence Tracking, History & Streaks | Completed | Real-time status classification (`upcoming`, `due`, `taken`, `unconfirmed`, `missed`, `skipped`, `corrected`), one-tap & caregiver-assisted confirmation, safe non-double-dose check-in & corrections, Daily/Weekly/Monthly/Calendar history views, medication breakdown, and adherence streaks. |
+| Validated Express Backend (`/api/*`) | Completed | Auth middleware (`accounts:lookup`), server-derived Firestore RBAC (`authzService.ts`), input validators, centralized error handler, structured request logging, and `/api/monitoring/status`. |
+| Clinical Persistence (Firestore REST + Live `onSnapshot`) | Completed | Medications, schedules, adherence records, medicationChanges, appointments, Care Relay handoffs, alerts, notification deliveries, and scheduler runs are mutated via verified Express routes and streamed live via Firestore `onSnapshot`. |
+| Pillu AI Companion (Phase 4) | Completed | Server-authoritative `/api/companion/chat`, `/api/companion/summary`, and `/api/companion/status` powered by `@google/genai` (`gemini-4-hydrogen`), grounded in Firestore context with strict no-diagnosis / no-dosage-change system instructions, prominent Medical Disclaimer, and explicit error banners when unconfigured. |
+| Gemini Vision Prescription Scanner (Phase 4) | Completed | `POST /api/medications/scan-prescription` uses server-side Gemini Vision structured JSON extraction; marks missing/uncertain fields for manual entry without inventing dosages, displays an editable draft form, and requires explicit caregiver confirmation before saving via `POST /api/medications`. |
+| Controlled Emergency QR & `/emergency/:token` | Completed | Owners issue revocable 24+ char `emg_*` tokens + scannable QR codes (`qrcode`) backed by non-listable `publicEmergencySnapshots` (`revoked == false && expiresAt > request.time`), served via `GET /api/emergency/:token`. |
+| Server-Side Reminder Scheduler | Completed (Active Sessions) | Live 60s interval scheduler over active authenticated sessions (`/api/session/heartbeat`) plus on-demand `POST /api/scheduler/run`, evaluating multi-dose slots, weekdays, intervals, and timezones while persisting audit rows in `schedulerRuns`. |
+| Notification Delivery Ledger | Completed (In-App + Resend) | In-app Firestore delivery (`alerts` + `notificationDeliveries`) records `delivered`; email delivery uses Resend (`RESEND_API_KEY`) and records `delivered` or `blocked` honestly based on configuration and API outcome. |

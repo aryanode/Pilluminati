@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-canvas: #FAF9F6;
+  --color-surface: #FFFFFF;
+  --color-mint-50: #F1F8F5;
+  --color-mint-100: #E2F1EA;
+  --color-mint-200: #C6E3D5;
+  --color-mint-400: #7EC1A8;
+  --color-mint-600: #1A7A68;
+
+  --color-lavender-50: #F4F1FA;
+  --color-lavender-100: #E8E1F6;
+  --color-lavender-200: #D2C5EE;
+  --color-lavender-600: #5D4A96;
+  --color-lavender-700: #4A397C;
+
+  --color-teal-950: #0C2B2E;
+  --color-teal-900: #10373A;
+  --color-teal-800: #1B4B4F;
+  --color-teal-700: #2C5E63;
+  --color-teal-600: #4B7478;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #FAF9F6;
+    color: #10373A;
+    scroll-behavior: smooth;
+  }
+
+  html.text-scale-large {
+    font-size: 18px;
+  }
+
+  html.text-scale-xl {
+    font-size: 20px;
+  }
+
+  html.high-contrast body {
+    background-color: #FFFFFF;
+    color: #061D1F;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  section[id],
+  div[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 3px solid #5D4A96;
+    outline-offset: 2px;
+  }
+
+  html.high-contrast input,
+  html.high-contrast select,
+  html.high-contrast textarea {
+    border-color: #10373A;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@keyframes pillu-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+@keyframes pillu-bounce {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  30% {
+    transform: translate3d(0, -8px, 0) scale(1.04, 0.98);
+  }
+  55% {
+    transform: translate3d(0, 1px, 0) scale(0.98, 1.02);
+  }
+  75% {
+    transform: translate3d(0, -4px, 0) scale(1.02, 0.99);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes pillu-celebrate {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0, -7px, 0) rotate(-3deg) scale(1.04);
+  }
+  50% {
+    transform: translate3d(0, -1px, 0) rotate(0deg) scale(1);
+  }
+  75% {
+    transform: translate3d(0, -6px, 0) rotate(3deg) scale(1.04);
+  }
+}
+
+@keyframes pillu-sleep-bob {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+  50% {
+    transform: translate3d(0, 1.5px, 0) scale(1.015, 0.985);
+  }
+}
+
+@keyframes pillu-sparkle {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes pillu-leaf-sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.pillu-anim-float {
+  animation: pillu-float 3.4s ease-in-out infinite;
+}
+
+.pillu-anim-bounce {
+  animation: pillu-bounce 0.72s cubic-bezier(0.22, 1, 0.36, 1) 1, pillu-float 3.4s ease-in-out 0.75s infinite;
+}
+
+.pillu-anim-celebrate {
+  animation: pillu-celebrate 1.4s ease-in-out 2, pillu-float 3.4s ease-in-out 2.8s infinite;
+}
+
+.pillu-anim-sleepy {
+  animation: pillu-sleep-bob 4.4s ease-in-out infinite;
+}
+
+.pillu-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pillu-sparkle 1.8s ease-in-out infinite;
+}
+
+.pillu-leaf {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: pillu-leaf-sway 3.6s ease-in-out infinite;
+}
+
+.pillu-reduced-motion,
+.pillu-reduced-motion * {
+  animation: none !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+}
